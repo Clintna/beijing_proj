@@ -42,5 +42,13 @@ public class QueryDTO {
      * 结束时间
      */
     private Date endTime;
+    /**
+     * 起点
+     */
+    private String lineBegin;
+    /**
+     * 终点
+     */
+    private String lineEnd;
 
 }

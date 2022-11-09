@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,10 @@ public class T2ResultGuidaoServiceImpl extends ServiceImpl<T2ResultGuidaoMapper,
     public T2GuidaoResultReturn query(QueryDTO queryDTO) {
         QueryWrapper<T2ResultGuidao> wrapper = new QueryWrapper<>();
         wrapper.eq("line_name", queryDTO.getLineName());
+        if (null != queryDTO.getLineBegin() && null != queryDTO.getLineEnd()) {
+            wrapper.eq("line_begin", queryDTO.getLineBegin());
+            wrapper.eq("line_end", queryDTO.getLineEnd());
+        }
         List<T2ResultGuidao> list = new ArrayList<>();
         String[] split = queryDTO.getDates().split(",");
         List<String> dates = Arrays.asList(split);
@@ -49,20 +54,22 @@ public class T2ResultGuidaoServiceImpl extends ServiceImpl<T2ResultGuidaoMapper,
             list.addAll(list1);
         });
         T2GuidaoResultReturn t2ResultReturn = new T2GuidaoResultReturn();
-        if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
+        if (!CollectionUtils.isEmpty(list)) {
+            if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
 
-            List<T2ResultGuidao> newList = ListSplit(list, queryDTO);
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(newList));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t2ResultReturn.setRedisKey(s);
-            t2ResultReturn.setT2ResultGongjiaos(newList);
-        } else {
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(list));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t2ResultReturn.setRedisKey(s);
-            t2ResultReturn.setT2ResultGongjiaos(list);
+                List<T2ResultGuidao> newList = ListSplit(list, queryDTO);
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(newList));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t2ResultReturn.setRedisKey(s);
+                t2ResultReturn.setT2ResultGongjiaos(newList);
+            } else {
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(list));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t2ResultReturn.setRedisKey(s);
+                t2ResultReturn.setT2ResultGongjiaos(list);
+            }
         }
         return t2ResultReturn;
     }

@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,10 +37,15 @@ public class T6ResultServiceImpl extends ServiceImpl<T6ResultMapper, T6Result> i
     private RedisUtil redisUtil;
     @Resource
     private T6ResultMapper t6ResultMapper;
+
     @Override
     public T6ResultReturn query(QueryDTO queryDTO) {
         QueryWrapper<T6Result> wrapper = new QueryWrapper<>();
         wrapper.eq("line_name", queryDTO.getLineName());
+        if (null != queryDTO.getLineBegin() && null != queryDTO.getLineEnd()) {
+            wrapper.eq("line_begin", queryDTO.getLineBegin());
+            wrapper.eq("line_end", queryDTO.getLineEnd());
+        }
         List<T6Result> list = new ArrayList<>();
         String[] split = queryDTO.getDates().split(",");
         List<String> dates = Arrays.asList(split);
@@ -49,20 +55,22 @@ public class T6ResultServiceImpl extends ServiceImpl<T6ResultMapper, T6Result> i
             list.addAll(list1);
         });
         T6ResultReturn t6ResultReturn = new T6ResultReturn();
-        if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
+        if (!CollectionUtils.isEmpty(list)) {
+            if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
 
-            List<T6Result> newList = ListSplit(list, queryDTO);
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(newList));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t6ResultReturn.setRedisKey(s);
-            t6ResultReturn.setT6Results(newList);
-        } else {
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(list));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t6ResultReturn.setRedisKey(s);
-            t6ResultReturn.setT6Results(list);
+                List<T6Result> newList = ListSplit(list, queryDTO);
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(newList));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t6ResultReturn.setRedisKey(s);
+                t6ResultReturn.setT6Results(newList);
+            } else {
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(list));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t6ResultReturn.setRedisKey(s);
+                t6ResultReturn.setT6Results(list);
+            }
         }
         return t6ResultReturn;
     }
@@ -99,6 +107,7 @@ public class T6ResultServiceImpl extends ServiceImpl<T6ResultMapper, T6Result> i
 
         ExportExcel.exportExcel("T6Result", column, data, request, response);
     }
+
     private List<T6Result> ListSplit(List<T6Result> list, QueryDTO queryDTO) {
         return getT2ResultListSplit(list, queryDTO);
     }

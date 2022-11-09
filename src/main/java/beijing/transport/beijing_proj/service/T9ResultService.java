@@ -1,9 +1,7 @@
 package beijing.transport.beijing_proj.service;
 
-import beijing.transport.beijing_proj.bean.T2ResultGongjiao;
 import beijing.transport.beijing_proj.bean.T9Result;
 import beijing.transport.beijing_proj.entity.QueryDTO;
-import beijing.transport.beijing_proj.entity.T2GongjiaoResultReturn;
 import beijing.transport.beijing_proj.entity.T9ResultReturn;
 import com.baomidou.mybatisplus.extension.service.IService;
 

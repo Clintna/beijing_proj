@@ -2,10 +2,8 @@ package beijing.transport.beijing_proj.bean;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import java.io.Serializable;
 import java.time.LocalDate;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +13,7 @@ import lombok.Setter;
  * </p>
  *
  * @author Jinglin
- * @since 2022-09-26
+ * @since 2022-11-09
  */
 @Getter
 @Setter
@@ -71,6 +69,54 @@ public class T10Result implements Serializable {
      */
     @TableField("rate")
     private Float rate;
+
+    /**
+     * 公交线路名称
+     */
+    @TableField("gongjiao_line_name")
+    private String gongjiaoLineName;
+
+    /**
+     * 公交线路起始站点
+     */
+    @TableField("gongjiao_line_begin")
+    private String gongjiaoLineBegin;
+
+    /**
+     * 公交线路结束站点
+     */
+    @TableField("gongjiao_line_end")
+    private String gongjiaoLineEnd;
+
+    /**
+     * 轨道线路名称
+     */
+    @TableField("guidao_line_name")
+    private String guidaoLineName;
+
+    /**
+     * 轨道线路起始站点
+     */
+    @TableField("guidao_line_begin")
+    private String guidaoLineBegin;
+
+    /**
+     * 轨道线路结束站点
+     */
+    @TableField("guidao_line_end")
+    private String guidaoLineEnd;
+
+    /**
+     * 公交下车站点id对应的站点名称
+     */
+    @TableField("gongjiao_stop_off_station_name")
+    private String gongjiaoStopOffStationName;
+
+    /**
+     * 公交上车站点id对应的站点名称
+     */
+    @TableField("guidao_stop_on_station_name")
+    private String guidaoStopOnStationName;
 
 
 }

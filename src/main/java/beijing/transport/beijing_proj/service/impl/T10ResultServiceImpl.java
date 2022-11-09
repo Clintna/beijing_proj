@@ -1,7 +1,6 @@
 package beijing.transport.beijing_proj.service.impl;
 
 import beijing.transport.beijing_proj.bean.T10Result;
-import beijing.transport.beijing_proj.bean.T9Result;
 import beijing.transport.beijing_proj.entity.QueryDTO;
 import beijing.transport.beijing_proj.entity.T10ResultReturn;
 import beijing.transport.beijing_proj.mapper.T10ResultMapper;
@@ -14,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +35,15 @@ public class T10ResultServiceImpl extends ServiceImpl<T10ResultMapper, T10Result
     private RedisUtil redisUtil;
     @Resource
     private T10ResultMapper t10ResultMapper;
+
     @Override
     public T10ResultReturn query(QueryDTO queryDTO) {
         QueryWrapper<T10Result> wrapper = new QueryWrapper<>();
-        wrapper.eq("gongjiao_off_line_id", queryDTO.getLineName());
+        wrapper.eq("gongjiao_line_name", queryDTO.getLineName());
+        if (null != queryDTO.getLineBegin() && null != queryDTO.getLineEnd()) {
+            wrapper.eq("gongjiao_line_begin", queryDTO.getLineBegin());
+            wrapper.eq("gongjiao_line_end", queryDTO.getLineEnd());
+        }
         List<T10Result> list = new ArrayList<>();
         String[] split = queryDTO.getDates().split(",");
         List<String> dates = Arrays.asList(split);
@@ -48,20 +53,22 @@ public class T10ResultServiceImpl extends ServiceImpl<T10ResultMapper, T10Result
             list.addAll(list1);
         });
         T10ResultReturn t10ResultReturn = new T10ResultReturn();
-        if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
+        if (!CollectionUtils.isEmpty(list)) {
+            if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
 
-            List<T10Result> newList = ListSplit(list, queryDTO);
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(newList));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t10ResultReturn.setRedisKey(s);
-            t10ResultReturn.setT10Results(newList);
-        } else {
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(list));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t10ResultReturn.setRedisKey(s);
-            t10ResultReturn.setT10Results(list);
+                List<T10Result> newList = ListSplit(list, queryDTO);
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(newList));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t10ResultReturn.setRedisKey(s);
+                t10ResultReturn.setT10Results(newList);
+            } else {
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(list));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t10ResultReturn.setRedisKey(s);
+                t10ResultReturn.setT10Results(list);
+            }
         }
         return t10ResultReturn;
     }
@@ -84,7 +91,14 @@ public class T10ResultServiceImpl extends ServiceImpl<T10ResultMapper, T10Result
         column.add("guidao_on_exchange");
         column.add("rate");
         column.add("run_date");
-
+        column.add("gongjiao_line_name");
+        column.add("gongjiao_line_begin");
+        column.add("gongjiao_line_end");
+        column.add("guidao_line_name");
+        column.add("guidao_line_begin");
+        column.add("guidao_line_end");
+        column.add("gongjiao_stop_off_station_name");
+        column.add("guidao_stop_on_station_name");
 
 
 
@@ -99,7 +113,14 @@ public class T10ResultServiceImpl extends ServiceImpl<T10ResultMapper, T10Result
             dataMap.put("gongjiao_off_sum", t9Result.getGongjiaoOffSum());
             dataMap.put("guidao_on_exchange", t9Result.getGuidaoOnExchange());
             dataMap.put("rate", t9Result.getRate());
-            dataMap.put("run_date", t9Result.getRunDate());
+            dataMap.put("gongjiao_line_name", t9Result.getGongjiaoLineName());
+            dataMap.put("gongjiao_line_begin", t9Result.getGongjiaoLineBegin());
+            dataMap.put("gongjiao_line_end", t9Result.getGongjiaoLineEnd());
+            dataMap.put("guidao_line_name", t9Result.getGuidaoLineName());
+            dataMap.put("guidao_line_begin", t9Result.getGuidaoLineBegin());
+            dataMap.put("guidao_line_end", t9Result.getGuidaoLineEnd());
+            dataMap.put("gongjiao_stop_off_station_name", t9Result.getGongjiaoStopOffStationName());
+            dataMap.put("guidao_stop_on_station_name", t9Result.getGuidaoStopOnStationName());
 
 
             data.add(dataMap);

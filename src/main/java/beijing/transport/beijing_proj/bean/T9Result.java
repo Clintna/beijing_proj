@@ -2,20 +2,18 @@ package beijing.transport.beijing_proj.bean;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * <p>
- * 指标9计算结果：公交和轨道共线区域满载率的比值
+ * 指标9计算结果：公交ab站点和轨道ab站点为共线关系，计算公交ab和轨道ab满载率
  * </p>
  *
  * @author Jinglin
- * @since 2022-09-26
+ * @since 2022-11-08
  */
 @Getter
 @Setter
@@ -61,28 +59,28 @@ public class T9Result implements Serializable {
     private String guidaoLineEnd;
 
     /**
-     * 共线公交站点顺序编号
+     * 共线公交站点顺序编号a
      */
-    @TableField("gongxian_gongjiao_station_orderid")
-    private Integer gongxianGongjiaoStationOrderid;
+    @TableField("gongxian_gongjiao_station_orderid_a")
+    private Integer gongxianGongjiaoStationOrderidA;
 
     /**
-     * 共线公交站点名称
+     * 共线公交站点名称a
      */
-    @TableField("gongxian_gongjiao_station_name")
-    private String gongxianGongjiaoStationName;
+    @TableField("gongxian_gongjiao_station_name_a")
+    private String gongxianGongjiaoStationNameA;
 
     /**
-     * 共线轨道站点顺序编号
+     * 共线轨道站点顺序编号a
      */
-    @TableField("gongxian_guidao_station_orderid")
-    private Integer gongxianGuidaoStationOrderid;
+    @TableField("gongxian_guidao_station_orderid_a")
+    private Integer gongxianGuidaoStationOrderidA;
 
     /**
-     * 共线轨道站点名称
+     * 共线轨道站点名称a
      */
-    @TableField("gongxian_guidao_station_name")
-    private String gongxianGuidaoStationName;
+    @TableField("gongxian_guidao_station_name_a")
+    private String gongxianGuidaoStationNameA;
 
     /**
      * 运行时间
@@ -91,16 +89,52 @@ public class T9Result implements Serializable {
     private LocalDateTime runDate;
 
     /**
-     * 共线公交站点满载率
+     * 共线公交站点a满载率
      */
-    @TableField("gongxian_gongjiao_station_load_rate")
-    private Float gongxianGongjiaoStationLoadRate;
+    @TableField("gongxian_gongjiao_station_load_rate_a")
+    private Float gongxianGongjiaoStationLoadRateA;
 
     /**
-     * 共线轨道站点满载率
+     * 共线轨道站点a满载率
      */
-    @TableField("gongxian_guidao_station_load_rate")
-    private Float gongxianGuidaoStationLoadRate;
+    @TableField("gongxian_guidao_station_load_rate_a")
+    private Float gongxianGuidaoStationLoadRateA;
+
+    /**
+     * 共线公交站点顺序编号b
+     */
+    @TableField("gongxian_gongjiao_station_orderid_b")
+    private Integer gongxianGongjiaoStationOrderidB;
+
+    /**
+     * 共线公交站点名称b
+     */
+    @TableField("gongxian_gongjiao_station_name_b")
+    private String gongxianGongjiaoStationNameB;
+
+    /**
+     * 共线轨道站点顺序编号b
+     */
+    @TableField("gongxian_guidao_station_orderid_b")
+    private Integer gongxianGuidaoStationOrderidB;
+
+    /**
+     * 共线轨道站点名称b
+     */
+    @TableField("gongxian_guidao_station_name_b")
+    private String gongxianGuidaoStationNameB;
+
+    /**
+     * 共线公交站点b满载率
+     */
+    @TableField("gongxian_gongjiao_station_load_rate_b")
+    private Float gongxianGongjiaoStationLoadRateB;
+
+    /**
+     * 共线轨道站点b满载率
+     */
+    @TableField("gongxian_guidao_station_load_rate_b")
+    private Float gongxianGuidaoStationLoadRateB;
 
 
 }

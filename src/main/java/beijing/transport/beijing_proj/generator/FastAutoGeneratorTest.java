@@ -49,7 +49,8 @@ public class FastAutoGeneratorTest {
 //        before();
         //表名集合
         List<String> tables = new ArrayList<>();
-        tables.add("user_role");
+        tables.add("t1_result");
+
 
 
         FastAutoGenerator.create(DATA_SOURCE_CONFIG)
@@ -77,7 +78,7 @@ public class FastAutoGeneratorTest {
                 })
                 //包配置
                 .packageConfig(builder -> {
-                    builder.parent("beijing.transport.beijing_proj.user")     //父包名
+                    builder.parent("beijing.transport.beijing_proj")     //父包名
                             .entity("bean")                 //Entity 包名
                             .service("service")             //	Service 包名
                             .serviceImpl("service.impl")    //Service Impl 包名

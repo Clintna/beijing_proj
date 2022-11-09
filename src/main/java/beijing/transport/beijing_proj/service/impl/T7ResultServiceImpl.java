@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -36,33 +37,33 @@ public class T7ResultServiceImpl extends ServiceImpl<T7ResultMapper, T7Result> i
     private RedisUtil redisUtil;
     @Resource
     private T7ResultMapper t7ResultMapper;
+
     @Override
     public T7ResultReturn query(QueryDTO queryDTO) {
         QueryWrapper<T7Result> wrapper = new QueryWrapper<>();
         wrapper.eq("gongjiao_line_name", queryDTO.getLineName());
-        List<T7Result> list = new ArrayList<>();
-        String[] split = queryDTO.getDates().split(",");
-        List<String> dates = Arrays.asList(split);
-        dates.forEach(d -> {
-            wrapper.eq("run_date", d);
-            final List<T7Result> list1 = t7ResultMapper.selectList(wrapper);
-            list.addAll(list1);
-        });
+        if (null != queryDTO.getLineBegin() && null != queryDTO.getLineEnd()) {
+            wrapper.eq("gongjiao_line_begin", queryDTO.getLineBegin());
+            wrapper.eq("gongjiao_line_end", queryDTO.getLineEnd());
+        }
+        List<T7Result> list = t7ResultMapper.selectList(wrapper);
         T7ResultReturn t7ResultReturn = new T7ResultReturn();
-        if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
+        if (!CollectionUtils.isEmpty(list)) {
+            if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
 
-            List<T7Result> newList = ListSplit(list, queryDTO);
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(newList));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t7ResultReturn.setRedisKey(s);
-            t7ResultReturn.setT7Results(newList);
-        } else {
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(list));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t7ResultReturn.setRedisKey(s);
-            t7ResultReturn.setT7Results(list);
+                List<T7Result> newList = ListSplit(list, queryDTO);
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(newList));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t7ResultReturn.setRedisKey(s);
+                t7ResultReturn.setT7Results(newList);
+            } else {
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(list));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t7ResultReturn.setRedisKey(s);
+                t7ResultReturn.setT7Results(list);
+            }
         }
         return t7ResultReturn;
     }
@@ -86,7 +87,6 @@ public class T7ResultServiceImpl extends ServiceImpl<T7ResultMapper, T7Result> i
         column.add("gongxian_distance");
         column.add("gongjiao_distance");
         column.add("distance_rate");
-
 
 
         List<Map<String, Object>> data = new ArrayList<>();

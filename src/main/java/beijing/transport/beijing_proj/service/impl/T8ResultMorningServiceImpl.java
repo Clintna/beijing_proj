@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +36,15 @@ public class T8ResultMorningServiceImpl extends ServiceImpl<T8ResultMorningMappe
     private RedisUtil redisUtil;
     @Resource
     private T8ResultMorningMapper t8ResultMorningMapper;
+
     @Override
     public T8MorningResultReturn query(QueryDTO queryDTO) {
         QueryWrapper<T8ResultMorning> wrapper = new QueryWrapper<>();
         wrapper.eq("gongjiao_line_name", queryDTO.getLineName());
+        if (null != queryDTO.getLineBegin() && null != queryDTO.getLineEnd()) {
+            wrapper.eq("gongjiao_line_begin", queryDTO.getLineBegin());
+            wrapper.eq("gongjiao_line_end", queryDTO.getLineEnd());
+        }
         List<T8ResultMorning> list = new ArrayList<>();
         String[] split = queryDTO.getDates().split(",");
         List<String> dates = Arrays.asList(split);
@@ -48,20 +54,22 @@ public class T8ResultMorningServiceImpl extends ServiceImpl<T8ResultMorningMappe
             list.addAll(list1);
         });
         T8MorningResultReturn t8MorningResultReturn = new T8MorningResultReturn();
-        if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
+        if (!CollectionUtils.isEmpty(list)) {
+            if (queryDTO.getPage() != 0 && queryDTO.getLimit() != 0) {
 
-            List<T8ResultMorning> newList = ListSplit(list, queryDTO);
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(newList));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t8MorningResultReturn.setRedisKey(s);
-            t8MorningResultReturn.setT8ResultMornings(newList);
-        } else {
-            String s = TaskIdGenerator.nextId();
-            redisUtil.set(s, JSON.toJSONString(list));
-            redisUtil.expire(s, 2L, TimeUnit.HOURS);
-            t8MorningResultReturn.setRedisKey(s);
-            t8MorningResultReturn.setT8ResultMornings(list);
+                List<T8ResultMorning> newList = ListSplit(list, queryDTO);
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(newList));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t8MorningResultReturn.setRedisKey(s);
+                t8MorningResultReturn.setT8ResultMornings(newList);
+            } else {
+                String s = TaskIdGenerator.nextId();
+                redisUtil.set(s, JSON.toJSONString(list));
+                redisUtil.expire(s, 2L, TimeUnit.HOURS);
+                t8MorningResultReturn.setRedisKey(s);
+                t8MorningResultReturn.setT8ResultMornings(list);
+            }
         }
         return t8MorningResultReturn;
     }
@@ -92,8 +100,6 @@ public class T8ResultMorningServiceImpl extends ServiceImpl<T8ResultMorningMappe
         column.add("run_date");
 
 
-
-
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < t8ResultMornings.size(); i++) {
             Map<String, Object> dataMap = new HashMap<>();
@@ -119,6 +125,7 @@ public class T8ResultMorningServiceImpl extends ServiceImpl<T8ResultMorningMappe
 
         ExportExcel.exportExcel("T8ResultEvening", column, data, request, response);
     }
+
     private List<T8ResultMorning> ListSplit(List<T8ResultMorning> list, QueryDTO queryDTO) {
         return getT2ResultListSplit(list, queryDTO);
     }
