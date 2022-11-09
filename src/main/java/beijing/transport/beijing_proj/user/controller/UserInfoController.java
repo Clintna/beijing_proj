@@ -52,12 +52,12 @@ public class UserInfoController {
     private final CustomerRealm customerRealm;
 
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public GongjiaoResponse register(@Valid @RequestBody UserInfo userInfo) {
         return new GongjiaoResponse().success().put("userId", userInfoService.createStUserInfo(userInfo));
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public GongjiaoResponse login(@RequestBody Map<String, String> map) {
         String userName = map.get("userName");
         String password = map.get("password");
@@ -93,7 +93,7 @@ public class UserInfoController {
         return new GongjiaoResponse().fail().message("密码错误，登陆失败");
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public GongjiaoResponse logout() {
         Subject subject = SecurityUtils.getSubject();
         String userName = (String) subject.getPrincipal();
