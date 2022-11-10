@@ -1,5 +1,6 @@
 package beijing.transport.beijing_proj.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,4 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/unitSearch")
 public class UnitSearchController {
+    @PostMapping("testPush")
+    void testPush(){
+        System.out.println("123");
+    }
 }
