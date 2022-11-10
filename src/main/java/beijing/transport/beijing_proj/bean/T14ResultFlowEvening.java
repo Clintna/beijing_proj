@@ -87,6 +87,16 @@ public class T14ResultFlowEvening implements Serializable {
      */
     @TableField("direction")
     private Integer direction;
+    /**
+     * 公交站点a名称
+     */
+    @TableField("station_name_a")
+    private String stationNameA;
+    /**
+     * 公交站点b名称
+     */
+    @TableField("station_name_b")
+    private String stationNameB;
 
 
 }

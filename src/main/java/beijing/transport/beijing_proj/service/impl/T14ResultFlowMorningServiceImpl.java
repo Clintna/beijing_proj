@@ -93,7 +93,8 @@ public class T14ResultFlowMorningServiceImpl extends ServiceImpl<T14ResultFlowMo
         column.add("flow_ab");
         column.add("flow_ab_rate");
         column.add("direction");
-
+        column.add("station_name_a");
+        column.add("station_name_b");
 
         List<Map<String, Object>> data = new ArrayList<>();
         for (int i = 0; i < t14ResultFlowMornings.size(); i++) {
@@ -110,7 +111,8 @@ public class T14ResultFlowMorningServiceImpl extends ServiceImpl<T14ResultFlowMo
             dataMap.put("flow_ab", t14ResultFlowMorning.getFlowAb());
             dataMap.put("flow_ab_rate", t14ResultFlowMorning.getFlowAbRate());
             dataMap.put("direction", t14ResultFlowMorning.getDirection());
-
+            dataMap.put("station_name_b", t14ResultFlowMorning.getStationNameB());
+            dataMap.put("station_name_a", t14ResultFlowMorning.getStationNameA());
             data.add(dataMap);
         }
 

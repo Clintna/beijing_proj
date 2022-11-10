@@ -94,6 +94,8 @@ public class T14ResultFlowEveningServiceImpl extends ServiceImpl<T14ResultFlowEv
         column.add("flow_ab");
         column.add("flow_ab_rate");
         column.add("direction");
+        column.add("station_name_a");
+        column.add("station_name_b");
 
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -111,6 +113,8 @@ public class T14ResultFlowEveningServiceImpl extends ServiceImpl<T14ResultFlowEv
             dataMap.put("flow_ab", t14ResultFlowEvening.getFlowAb());
             dataMap.put("flow_ab_rate", t14ResultFlowEvening.getFlowAbRate());
             dataMap.put("direction", t14ResultFlowEvening.getDirection());
+            dataMap.put("station_name_b", t14ResultFlowEvening.getStationNameB());
+            dataMap.put("station_name_a", t14ResultFlowEvening.getStationNameA());
 
             data.add(dataMap);
         }
